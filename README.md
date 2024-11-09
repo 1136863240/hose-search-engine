@@ -1,2 +1,15 @@
-# hose-search-engine
-A local text search engine
+# 本地文本搜索引擎
+
+#### 介绍
+基于Python3开发的搜索引擎
+
+#### 安装教程
+
+1.  通过Python3.7启动程序
+2.  用浏览器访问code-mgr目录下的index.html，可以添加索引（添加进度可通过控制台查看）
+3.  用浏览器访问code-fed目录下的index.html，可以搜索索引
+
+#### 使用说明
+
+目前暂无删除索引功能
+
