@@ -24,4 +24,7 @@ urlpatterns = [
     path('lex/', views.lex),
     path('add/', views.add),
     path('search/', views.search),
+    path('save_path/', views.save_path),
+    path('get_saved_paths/', views.get_saved_paths),
+    path('del_save_path/', views.del_save_path),
 ]

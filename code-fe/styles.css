@@ -15,7 +15,8 @@ body {
     margin-right: 10px;
 }
 
-#search-button {
+#search-button,
+ #saved-button {
     padding: 10px 20px;
 }
 
@@ -36,4 +37,17 @@ body {
 #pagination button {
     padding: 5px 10px;
     margin-right: 5px;
+}
+
+#history-list tr {
+    display: block;
+    overflow: hidden;
+}
+
+#history-list tr:nth-child(-n+2) {
+    display: table-row;
+}
+
+#history-list tr:nth-child(n+3) {
+    display: none;
 }
