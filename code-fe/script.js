@@ -5,8 +5,21 @@ $(function() {
     let currentQuery = '';
     let historyIsExpand = false;
     let history = [];
+    let no_history_status = false;
     const $historyBody = $('#history-body');
     const itemsPerPage = 20;
+    const url = 'http://127.0.0.1:808';
+
+    const no_history_mode = localStorage.getItem('no_history_mode');
+    if (no_history_mode === null || no_history_mode === 'false') {
+        $('#no-history-status').text('开启');
+        $('#history-div').css('display', 'block');
+        no_history_status = false;
+    } else {
+        $('#no-history-status').text('关闭');
+        $('#history-div').css('display', 'none');
+        no_history_status = true;
+    }
 
     const savedHistory = localStorage.getItem('history');
     if (savedHistory) {
@@ -18,16 +31,18 @@ $(function() {
         const query = $('#search-input').val();
         if (query) {
             currentQuery = query;
-            history.unshift(query);
-            localStorage.setItem('history', history);
-            showHistory();
+            if (!no_history_status) {
+                history.unshift(query);
+                localStorage.setItem('history', history);
+                showHistory();
+            }
             fetchResults(query, currentPage);
         }
     });
 
     $('#saved-button').on('click', function() {
         $.ajax({
-            url: 'http://127.0.0.1:808/get_saved_paths/',
+            url: url + '/get_saved_paths/',
             method: 'GET',
             data: {
                 page: currentSavedPage,
@@ -56,20 +71,44 @@ $(function() {
         });
     });
 
+    $('#history-button').on('click', function () {
+        if (no_history_status) {
+            localStorage.setItem('no_history_mode', 'false');
+            $('#history-div').css('display', 'block');
+        } else {
+            if (!confirm('确认清空历史记录吗？')) {
+                return;
+            }
+            history = [];
+            localStorage.setItem('no_history_mode', 'true');
+            localStorage.setItem('history', history);
+            showHistory();
+            $('#history-div').css('display', 'none');
+        }
+        no_history_status = !no_history_status;
+        var status = '开启';
+        if (no_history_status) {
+            status = '关闭';
+        }
+        $('#no-history-status').text(status);
+    });
+
     $('#show_hidden').on('click', function () {
         if (historyIsExpand) {
             $('#history-list tr:nth-child(n+3)').css('display', 'none');
             $(this).text('展开');
-            historyIsExpand = false;
         } else {
             $('#history-list tr:nth-child(n+3)').css('display', 'table-row');
             $(this).text('收起');
-            historyIsExpand = true;
         }
+        historyIsExpand =!historyIsExpand;
     });
 
     function showHistory() {
         $historyBody.empty();
+        if (no_history_status) {
+            return;
+        }
         for (var index in history) {
             const item = history[index];
             const $item = $('<td>');
@@ -98,7 +137,7 @@ $(function() {
 
     function fetchResults(query, page) {
         $.ajax({
-            url: 'http://127.0.0.1:808/search/',
+            url: url + '/search/',
             method: 'GET',
             data: {
                 q: query,
@@ -116,7 +155,7 @@ $(function() {
 
     function fetchSavedResults(page) {
         $.ajax({
-            url: 'http://127.0.0.1:808/get_saved_paths/',
+            url: url + '/get_saved_paths/',
             method: 'GET',
             data: {
                 page: page,
@@ -143,7 +182,7 @@ $(function() {
                     var path_id = parseInt($(this).attr('id').substring(5));
                     var path = data[path_id];
                     $.ajax({
-                        url: 'http://127.0.0.1:808/save_path/',
+                        url: url + '/save_path/',
                         method: 'POST',
                         data: {
                             path: path,
@@ -175,7 +214,7 @@ $(function() {
                 var path_id = parseInt($(this).attr('id').substring(9));
                 var path = data[path_id];
                 $.ajax({
-                    url: 'http://127.0.0.1:808/del_save_path/',
+                    url: url + '/del_save_path/',
                     method: 'POST',
                     data: {
                         path: path,

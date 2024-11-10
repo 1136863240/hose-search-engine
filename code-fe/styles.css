@@ -16,7 +16,8 @@ body {
 }
 
 #search-button,
- #saved-button {
+ #saved-button,
+ #history-button {
     padding: 10px 20px;
 }
 
