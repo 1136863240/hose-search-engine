@@ -52,3 +52,8 @@ body {
 #history-list tr:nth-child(n+3) {
     display: none;
 }
+
+#history-list td {
+    padding: 0 10px;
+}
+

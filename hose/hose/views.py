@@ -2,6 +2,7 @@ from django.http import JsonResponse
 import jieba
 import os
 import json
+import difflib
 from . import global_vars
 
 def get_saved_range(file_list, page):
@@ -63,9 +64,7 @@ def lex(request):
                         _words = jieba.cut(line, cut_all=True)
                         for word in _words:
                             if word in {
-                                '', ' ', '\n', '\t', '\r', '`', '~', '!', '@', '#', '$', '%', '^', '&', '*',
-                                '(', ')', '-', '_', '+', '=', '[', ']', '{', '}', '|', '\\', ';', ':', '\'',
-                                '"', ',', '<', '>', '.', '?', '/', '()'
+                                '', ' ', '\n', '\t', '\r', '\n\r', '\r\n'
                             }:
                                 continue
                             if word not in invert_index:
@@ -102,20 +101,19 @@ def search(request):
         return JsonResponse({'status': 'error','message': 'page not found'}, status=500)
     
     words = jieba.cut(q, cut_all=True)
-    result = {}
+    diff_set = set()
     for word in words:
-        if word in global_vars.datas:
-            if word not in result:
-                result[word] = []
-            result[word].extend(list(global_vars.datas[word]))
-    
-    pre_ret = set()
-    ret = []
-    for value in result.values():
-        pre_ret.update(value)
-    start, end = get_saved_range(pre_ret, page)
-    ret = list(pre_ret)[start:end]
-    return JsonResponse({'total': len(pre_ret), 'data': ret})
+        for key in global_vars.datas.keys():
+            diff_value = difflib.SequenceMatcher(None, word, key).ratio()
+            if diff_value > 0.0:
+                diff_set.add((diff_value, key))
+    sort_list = sorted(list(diff_set), key=lambda x: x[0], reverse=True)
+    result = []
+    for value in sort_list:
+        result.extend(global_vars.datas[value[1]])
+    start, end = get_saved_range(result, page)
+    ret = result[start:end]
+    return JsonResponse({'total': len(sort_list), 'data': ret})
 
 
 def save_path(request):

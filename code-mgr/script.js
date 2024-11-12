@@ -16,7 +16,6 @@ $(function() {
                         dict: JSON.stringify(response),
                     },
                     success: function(response2) {
-                        console.log(response2);
                         if (response2.status === 'success') {
                             $('#add-input').val('');
                             alert('add success');

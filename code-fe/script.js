@@ -93,6 +93,15 @@ $(function() {
         $('#no-history-status').text(status);
     });
 
+    $('#clear-history-button').on('click', function () {
+        if (!confirm('确认清空历史记录吗？')) {
+            return;
+        }
+        history = [];
+        localStorage.setItem('history', history);
+        showHistory();
+    })
+
     $('#show_hidden').on('click', function () {
         if (historyIsExpand) {
             $('#history-list tr:nth-child(n+3)').css('display', 'none');
